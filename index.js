@@ -164,6 +164,8 @@ $.get(PATH_ED_DETECT, function (data) {
       },
 
       series: [
+
+        // Schlauch
         {
           name: "yhat_lower",
           type: "line",
@@ -193,6 +195,9 @@ $.get(PATH_ED_DETECT, function (data) {
           stackStrategy: "all",
           symbol: "none",
         },
+
+
+        // Obere Punkte
         {
           name: "upper_scatter",
           type: "scatter",
@@ -204,11 +209,11 @@ $.get(PATH_ED_DETECT, function (data) {
           itemStyle: {
             color: "red",
           },
-          symbolSize: data.map(function (item) {
-            return Math.sqrt(item.yhat_upper) * 0.3;
-          }),
+          symbolSize: 5,
           showSymbol: true,
         },
+
+        // Untere Punkte
         {
           name: "lower_scatter",
           type: "scatter",
@@ -220,12 +225,11 @@ $.get(PATH_ED_DETECT, function (data) {
           itemStyle: {
             color: "blue",
           },
-          symbolSize: data.map(function (item) {
-            var size = (item.yhat_lower - item.orig_value) * 0.02;
-            return size;
-          }),
+          symbolSize: 5,
           showSymbol: true,
         },
+
+        // Mittelwert
         {
           name: "yhat",
           type: "line",
