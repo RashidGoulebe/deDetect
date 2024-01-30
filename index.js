@@ -202,57 +202,79 @@ $.get(PATH_ED_DETECT, function (data) {
           name: "upper_scatter",
           type: "effectScatter",
           data: data.map(function (item) {
-              if ((item.orig_value - item.yhat_upper) > 1500) {
-                  return item.orig_value;
-                }
-            }),
-            symbolSize: 5,
-            itemStyle: {
-                color: "red",
-            },
-            symbol: 'circle'
+            if (item.orig_value - item.yhat_upper > 1500) {
+              return item.orig_value;
+            }
+          }),
+          symbolSize: 5,
+          itemStyle: {
+            color: "red",
+          },
+          symbol: "circle",
         },
         {
           name: "upper_scatter",
           type: "effectScatter",
           data: data.map(function (item) {
-              if (((item.orig_value - item.yhat_upper) > 0) && ((item.orig_value - item.yhat_upper) < 1500)) {
-                  return item.orig_value;
-                }
-            }),
-            symbolSize: 4,
-            itemStyle: {
-                color: "orange",
-            },
+            if (
+              item.orig_value - item.yhat_upper > 0 &&
+              item.orig_value - item.yhat_upper < 1500
+            ) {
+              return item.orig_value;
+            }
+          }),
+          symbolSize: 4,
+          itemStyle: {
+            color: "orange",
+          },
         },
         // Untere Punkte
         {
-            name: "much_lower_scatter",
-            type: "scatter",
-            data: data.map(function (item) {
-                if ((item.yhat_lower - item.orig_value ) > 1000) {
-                    return item.orig_value;
-                  }
-              }),
-              symbolSize: 5,
-              itemStyle: {
-                  color: "purple",
-              },
-              symbol: 'circle'
+          name: "much_lower_scatter",
+          type: "scatter",
+          data: data.map(function (item) {
+            if (item.yhat_lower - item.orig_value > 1000) {
+              return item.orig_value;
+            }
+          }),
+          symbolSize: 5,
+          itemStyle: {
+            color: "purple",
           },
-          {
-            name: "upper_scatter",
-            type: "scatter",
-            data: data.map(function (item) {
-                if (((item.yhat_lower - item.orig_value ) > 0) && ((item.yhat_lower - item.orig_value ) < 1000)) {
-                    return item.orig_value;
-                  }
-              }),
-              symbolSize: 3,
-              itemStyle: {
-                  color: "blue",
-              },
+          symbol: "circle",
+        },
+        {
+          name: "lower_scatter",
+          type: "scatter",
+          data: data.map(function (item) {
+            if (
+              ((item.yhat_lower - item.orig_value) > 0) &&
+              ((item.yhat_lower - item.orig_value) < 1000)
+            ) {
+              return item.orig_value;
+            }
+          }),
+          symbolSize: 3,
+          itemStyle: {
+            color: "blue",
           },
+        },
+
+        // Mittlere Punkte
+        {
+          name: "mid_scatter",
+          type: "scatter",
+          data: data.map(function (item) {
+            if ((item.yhat_lower < item.orig_value) && (item.orig_value < item.yhat_upper)) {
+              return item.orig_value;
+            }
+          }),
+          symbolSize: 2,
+          itemStyle: {
+            color: "black",
+          },
+          symbol: "circle",
+        },
 
         // Mittelwert
         {
