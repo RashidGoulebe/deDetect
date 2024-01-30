@@ -156,14 +156,12 @@ $.get(PATH_ED_DETECT, function (data) {
             var date = new Date(value);
             return idx === 0
               ? value
-              : [date.getMonth() + 1, date.getDate()].join("-");
+              : [date.getDate(), date.getMonth() + 1].join("-");
           },
         },
         boundaryGap: false,
       },
-      yAxis: {
-        scale: true,
-      },
+      yAxis: {},
 
       series: [
         // Schlauch
@@ -177,12 +175,14 @@ $.get(PATH_ED_DETECT, function (data) {
             opacity: 0,
           },
           symbol: "none",
+          stackStrategy: "all",
           stack: "yhat-band",
         },
         {
           name: "yhat_upper",
           type: "line",
           data: data.map(function (item) {
+            // Schlauchbreite!
             return item.yhat_upper - item.yhat_lower;
           }),
           lineStyle: {
@@ -200,34 +200,59 @@ $.get(PATH_ED_DETECT, function (data) {
         // Obere Punkte
         {
           name: "upper_scatter",
-          type: "scatter",
+          type: "effectScatter",
           data: data.map(function (item) {
-            if (item.orig_value > item.yhat_upper) {
-              return item.orig_value;
-            }
-          }),
-          itemStyle: {
-            color: "red",
-          },
-          symbolSize: 5,
-          showSymbol: true,
+              if ((item.orig_value - item.yhat_upper) > 1500) {
+                  return item.orig_value;
+                }
+            }),
+            symbolSize: 5,
+            itemStyle: {
+                color: "red",
+            },
+            symbol: 'circle'
         },
-
+        {
+          name: "upper_scatter",
+          type: "effectScatter",
+          data: data.map(function (item) {
+              if (((item.orig_value - item.yhat_upper) > 0) && ((item.orig_value - item.yhat_upper) < 1500)) {
+                  return item.orig_value;
+                }
+            }),
+            symbolSize: 4,
+            itemStyle: {
+                color: "orange",
+            },
+        },
         // Untere Punkte
         {
-          name: "lower_scatter",
-          type: "scatter",
-          data: data.map(function (item) {
-            if (item.orig_value < item.yhat_lower) {
-              return item.orig_value;
-            }
-          }),
-          itemStyle: {
-            color: "blue",
+            name: "much_lower_scatter",
+            type: "scatter",
+            data: data.map(function (item) {
+                if ((item.yhat_lower - item.orig_value ) > 1000) {
+                    return item.orig_value;
+                  }
+              }),
+              symbolSize: 5,
+              itemStyle: {
+                  color: "purple",
+              },
+              symbol: 'circle'
           },
-          symbolSize: 5,
-          showSymbol: true,
-        },
+          {
+            name: "upper_scatter",
+            type: "scatter",
+            data: data.map(function (item) {
+                if (((item.yhat_lower - item.orig_value ) > 0) && ((item.yhat_lower - item.orig_value ) < 1000)) {
+                    return item.orig_value;
+                  }
+              }),
+              symbolSize: 3,
+              itemStyle: {
+                  color: "blue",
+              },
+          },
 
         // Mittelwert
         {
