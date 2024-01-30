@@ -125,9 +125,6 @@ $.get(PATH_CONFIDENCE_BAND, function (data) {
 });
 
 $.get(PATH_ED_DETECT, function (data) {
-  var base = -data.reduce(function (min, val) {
-    return Math.floor(Math.min(min, val.l));
-  }, Infinity);
   myChart2.setOption(
     (option2 = {
       title: {
