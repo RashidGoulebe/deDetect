@@ -3,11 +3,9 @@ var PATH_ED_DETECT = "./edDetect.json";
 
 var chartDom1 = document.getElementById("main1");
 var chartDom2 = document.getElementById("main2");
-var chartDom3 = document.getElementById("main3");
 
 var myChart1 = echarts.init(chartDom1);
 var myChart2 = echarts.init(chartDom2);
-var myChart3 = echarts.init(chartDom3);
 
 var option1;
 
@@ -126,30 +124,26 @@ $.get(PATH_CONFIDENCE_BAND, function (data) {
   );
 });
 
-/** @type EChartsOption */
-const option2 = {
-  xAxis: {
-    type: "category",
-    data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-  },
-  yAxis: {
-    type: "value",
-  },
-  series: [
-    {
-      data: [150, 230, 224, 218, 135, 147, 260],
-      type: "line",
-    },
-  ],
-};
-myChart2.setOption(option2);
-
 $.get(PATH_ED_DETECT, function (data) {
   var base = -data.reduce(function (min, val) {
     return Math.floor(Math.min(min, val.l));
   }, Infinity);
-  myChart3.setOption(
-    (option3 = {
+  myChart2.setOption(
+    (option2 = {
+        dataZoom: [
+            {
+                id: 'dataZoomX',
+                type: 'slider',
+                xAxisIndex: [0],
+                filterMode: 'filter'
+            },
+            {
+                id: 'dataZoomY',
+                type: 'slider',
+                yAxisIndex: [0],
+                filterMode: 'empty'
+            }
+        ],
       xAxis: {
         type: "category",
         data: data.map(function (item) {
@@ -166,6 +160,7 @@ $.get(PATH_ED_DETECT, function (data) {
         boundaryGap: false,
       },
       yAxis: {
+        scale: true
       },
 
       series: [
@@ -210,8 +205,7 @@ $.get(PATH_ED_DETECT, function (data) {
             color: "red",
           },
           symbolSize: data.map(function (item) {
-            var size = (item.orig_value - item.yhat_upper) * 0.02;
-            return size;
+            return Math.sqrt(item.yhat_upper) * 0.3;
           }),
           showSymbol: true,
         },
@@ -248,4 +242,4 @@ $.get(PATH_ED_DETECT, function (data) {
   );
 });
 
-option3 && myChart3.setOption(option3);
+option2 && myChart2.setOption(option2);
