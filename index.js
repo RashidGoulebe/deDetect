@@ -166,7 +166,6 @@ $.get(PATH_ED_DETECT, function (data) {
         boundaryGap: false,
       },
       yAxis: {
-        splitNumber: 3,
       },
 
       series: [
@@ -203,27 +202,35 @@ $.get(PATH_ED_DETECT, function (data) {
           name: "upper_scatter",
           type: "scatter",
           data: data.map(function (item) {
-            if(item.orig_value > item.yhat_upper){ 
-                return item.orig_value
-            };
+            if (item.orig_value > item.yhat_upper) {
+              return item.orig_value;
+            }
           }),
           itemStyle: {
             color: "red",
           },
-          showSymbol: false,
+          symbolSize: data.map(function (item) {
+            var size = (item.orig_value - item.yhat_upper) * 0.02;
+            return size;
+          }),
+          showSymbol: true,
         },
         {
           name: "lower_scatter",
           type: "scatter",
           data: data.map(function (item) {
-            if(item.orig_value < item.yhat_lower){ 
-                return item.orig_value
-            };
+            if (item.orig_value < item.yhat_lower) {
+              return item.orig_value;
+            }
           }),
           itemStyle: {
-            color: "green",
+            color: "blue",
           },
-          showSymbol: false,
+          symbolSize: data.map(function (item) {
+            var size = (item.yhat_lower - item.orig_value) * 0.02;
+            return size;
+          }),
+          showSymbol: true,
         },
         {
           name: "yhat",
@@ -236,10 +243,6 @@ $.get(PATH_ED_DETECT, function (data) {
           },
           showSymbol: false,
         },
-        {
-            name: 'scatter',
-            type: 'scatter'
-          },
       ],
     })
   );
