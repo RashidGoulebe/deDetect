@@ -130,20 +130,25 @@ $.get(PATH_ED_DETECT, function (data) {
   }, Infinity);
   myChart2.setOption(
     (option2 = {
-        dataZoom: [
-            {
-                id: 'dataZoomX',
-                type: 'slider',
-                xAxisIndex: [0],
-                filterMode: 'filter'
-            },
-            {
-                id: 'dataZoomY',
-                type: 'slider',
-                yAxisIndex: [0],
-                filterMode: 'empty'
-            }
-        ],
+      title: {
+        text: "ED DETECT",
+        subtext: "Anomaly detection",
+        left: "center",
+      },
+      dataZoom: [
+        {
+          id: "dataZoomX",
+          type: "slider",
+          xAxisIndex: [0],
+          filterMode: "filter",
+        },
+        {
+          id: "dataZoomY",
+          type: "slider",
+          yAxisIndex: [0],
+          filterMode: "empty",
+        },
+      ],
       xAxis: {
         type: "category",
         data: data.map(function (item) {
@@ -160,11 +165,10 @@ $.get(PATH_ED_DETECT, function (data) {
         boundaryGap: false,
       },
       yAxis: {
-        scale: true
+        scale: true,
       },
 
       series: [
-
         // Schlauch
         {
           name: "yhat_lower",
@@ -195,7 +199,6 @@ $.get(PATH_ED_DETECT, function (data) {
           stackStrategy: "all",
           symbol: "none",
         },
-
 
         // Obere Punkte
         {
