@@ -19,42 +19,42 @@ $.get(PATH_CONFIDENCE_BAND, function (data) {
   myChart1.setOption(
     (option = {
       title: {
-        text: 'Confidence Band',
-        subtext: 'Example in MetricsGraphics.js',
-        left: 'center'
+        text: "Confidence Band",
+        subtext: "Example in MetricsGraphics.js",
+        left: "center",
       },
       tooltip: {
-        trigger: 'axis',
+        trigger: "axis",
         axisPointer: {
-          type: 'cross',
+          type: "cross",
           animation: false,
           label: {
-            backgroundColor: '#ccc',
-            borderColor: '#aaa',
+            backgroundColor: "#ccc",
+            borderColor: "#aaa",
             borderWidth: 1,
             shadowBlur: 0,
             shadowOffsetX: 0,
             shadowOffsetY: 0,
-            color: '#222'
-          }
+            color: "#222",
+          },
         },
         formatter: function (params) {
           return (
             params[2].name +
-            '<br />' +
+            "<br />" +
             ((params[2].value - base) * 100).toFixed(1) +
-            '%'
+            "%"
           );
-        }
+        },
       },
       grid: {
-        left: '3%',
-        right: '4%',
-        bottom: '3%',
-        containLabel: true
+        left: "3%",
+        right: "4%",
+        bottom: "3%",
+        containLabel: true,
       },
       xAxis: {
-        type: 'category',
+        type: "category",
         data: data.map(function (item) {
           return item.date;
         }),
@@ -63,65 +63,65 @@ $.get(PATH_CONFIDENCE_BAND, function (data) {
             var date = new Date(value);
             return idx === 0
               ? value
-              : [date.getMonth() + 1, date.getDate()].join('-');
-          }
+              : [date.getMonth() + 1, date.getDate()].join("-");
+          },
         },
-        boundaryGap: false
+        boundaryGap: false,
       },
       yAxis: {
         axisLabel: {
           formatter: function (val) {
-            return (val - base) * 100 + '%';
-          }
+            return (val - base) * 100 + "%";
+          },
         },
         axisPointer: {
           label: {
             formatter: function (params) {
-              return ((params.value - base) * 100).toFixed(1) + '%';
-            }
-          }
+              return ((params.value - base) * 100).toFixed(1) + "%";
+            },
+          },
         },
-        splitNumber: 3
+        splitNumber: 3,
       },
       series: [
         {
-          name: 'L',
-          type: 'line',
+          name: "L",
+          type: "line",
           data: data.map(function (item) {
             return item.l + base;
           }),
           lineStyle: {
-            opacity: 0
+            opacity: 0,
           },
-          stack: 'confidence-band',
-          symbol: 'none'
+          stack: "confidence-band",
+          symbol: "none",
         },
         {
-          name: 'U',
-          type: 'line',
+          name: "U",
+          type: "line",
           data: data.map(function (item) {
             return item.u - item.l;
           }),
           lineStyle: {
-            opacity: 0
+            opacity: 0,
           },
           areaStyle: {
-            color: '#ccc'
+            color: "#ccc",
           },
-          stack: 'confidence-band',
-          symbol: 'none'
+          stack: "confidence-band",
+          symbol: "none",
         },
         {
-          type: 'line',
+          type: "line",
           data: data.map(function (item) {
             return item.value + base;
           }),
           itemStyle: {
-            color: '#333'
+            color: "#333",
           },
-          showSymbol: false
-        }
-      ]
+          showSymbol: false,
+        },
+      ],
     })
   );
 });
@@ -166,61 +166,80 @@ $.get(PATH_ED_DETECT, function (data) {
         boundaryGap: false,
       },
       yAxis: {
-        splitNumber: 3
+        splitNumber: 3,
       },
 
       series: [
-          {
-              name: "yhat_lower",
-              type: "line",
-              data: data.map(function (item) {
-                  return item.yhat_lower;
-                }),
-                lineStyle: {
-                    opacity: 0,
-                },
-                symbol: "none",
-                stack: "yhat-band",
-            },
-            {
-                name: "yhat_upper",
-                type: "line",
-                data: data.map(function (item) {
-                    return item.yhat_upper - item.yhat_lower;
-                }),
-                lineStyle: {
-                    opacity: 0,
-                },
-                
-                areaStyle: {
-                    color: "green",
-                },
-                stack: "yhat-band",
-                stackStrategy: "all",
-                symbol: "none",
-            },
-            
         {
-            type: 'line',
-            data: data.map(function (item) {
-              return item.orig_value;
-            }),
-            itemStyle: {
-              color: '#333'
-            },
-            showSymbol: false
+          name: "yhat_lower",
+          type: "line",
+          data: data.map(function (item) {
+            return item.yhat_lower;
+          }),
+          lineStyle: {
+            opacity: 0,
           },
+          symbol: "none",
+          stack: "yhat-band",
+        },
         {
-            type: 'line',
-            data: data.map(function (item) {
-              return item.yhat;
-            }),
-            itemStyle: {
-              color: 'red'
-            },
-            showSymbol: false
-          }
+          name: "yhat_upper",
+          type: "line",
+          data: data.map(function (item) {
+            return item.yhat_upper - item.yhat_lower;
+          }),
+          lineStyle: {
+            opacity: 0,
+          },
 
+          areaStyle: {
+            color: "green",
+          },
+          stack: "yhat-band",
+          stackStrategy: "all",
+          symbol: "none",
+        },
+        {
+          name: "upper_scatter",
+          type: "scatter",
+          data: data.map(function (item) {
+            if(item.orig_value > item.yhat_upper){ 
+                return item.orig_value
+            };
+          }),
+          itemStyle: {
+            color: "red",
+          },
+          showSymbol: false,
+        },
+        {
+          name: "lower_scatter",
+          type: "scatter",
+          data: data.map(function (item) {
+            if(item.orig_value < item.yhat_lower){ 
+                return item.orig_value
+            };
+          }),
+          itemStyle: {
+            color: "green",
+          },
+          showSymbol: false,
+        },
+        {
+          name: "yhat",
+          type: "line",
+          data: data.map(function (item) {
+            return item.yhat;
+          }),
+          itemStyle: {
+            color: "black",
+          },
+          showSymbol: false,
+        },
+        {
+            name: 'scatter',
+            type: 'scatter'
+          },
       ],
     })
   );
