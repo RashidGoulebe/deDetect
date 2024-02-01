@@ -135,14 +135,17 @@ $.get(PATH_ED_DETECT, function (data) {
           xAxisIndex: [0],
           filterMode: "filter",
         },
-        {
-          id: "dataZoomY",
-          type: "slider",
-          yAxisIndex: [0],
-          filterMode: "empty",
-        },
       ],
-      legend: {},
+      title: {
+        text: "Confidence Band",
+        subtext: "Example in MetricsGraphics.js",
+        left: "center",
+      },
+      legend: {
+        right: 'auto',
+        left: 895,
+        bottom: 'center'
+      },
       xAxis: {
         type: "category",
         data: data.map(function (item) {
@@ -163,7 +166,7 @@ $.get(PATH_ED_DETECT, function (data) {
       series: [
         // Schlauch
         {
-          name: "yhat_schlauch",
+          name: "Schlauch",
           type: "line",
           data: data.map(function (item) {
             return item.yhat_lower;
@@ -176,7 +179,7 @@ $.get(PATH_ED_DETECT, function (data) {
           stack: "yhat-band",
         },
         {
-          name: "yhat_schlauch",
+          name: "Schlauch",
           type: "line",
           data: data.map(function (item) {
             // Schlauchbreite!
@@ -196,7 +199,7 @@ $.get(PATH_ED_DETECT, function (data) {
 
         // Obere Punkte
         {
-          name: "much_upper_scatter",
+          name: "> 1500",
           type: "effectScatter",
           data: data.map(function (item) {
             if (item.orig_value - item.yhat_upper > 1500) {
@@ -210,7 +213,7 @@ $.get(PATH_ED_DETECT, function (data) {
           symbol: "circle",
         },
         {
-          name: "upper_scatter",
+          name: "1500 - 0",
           type: "effectScatter",
           data: data.map(function (item) {
             if (
@@ -227,39 +230,39 @@ $.get(PATH_ED_DETECT, function (data) {
         },
         // Untere Punkte
         {
-          name: "much_lower_scatter",
-          type: "scatter",
-          data: data.map(function (item) {
-            if (item.yhat_lower - item.orig_value > 1000) {
-              return item.orig_value;
-            }
-          }),
-          symbolSize: 5,
-          itemStyle: {
-            color: "purple",
-          },
-          symbol: "circle",
-        },
-        {
-          name: "lower_scatter",
+          name: "0 - 1000",
           type: "scatter",
           data: data.map(function (item) {
             if (
               ((item.yhat_lower - item.orig_value) > 0) &&
               ((item.yhat_lower - item.orig_value) < 1000)
-            ) {
-              return item.orig_value;
-            }
-          }),
-          symbolSize: 3,
-          itemStyle: {
-            color: "blue",
+              ) {
+                return item.orig_value;
+              }
+            }),
+            symbolSize: 3,
+            itemStyle: {
+              color: "blue",
+            },
           },
-        },
-
+          {
+            name: "< 1000",
+            type: "scatter",
+            data: data.map(function (item) {
+              if (item.yhat_lower - item.orig_value > 1000) {
+                return item.orig_value;
+              }
+            }),
+            symbolSize: 5,
+            itemStyle: {
+              color: "purple",
+            },
+            symbol: "circle",
+          },
+          
         // Mittlere Punkte
         {
-          name: "mid_scatter",
+          name: "mid",
           type: "scatter",
           data: data.map(function (item) {
             if ((item.yhat_lower < item.orig_value) && (item.orig_value < item.yhat_upper)) {
