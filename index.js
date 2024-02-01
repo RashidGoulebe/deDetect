@@ -127,11 +127,7 @@ $.get(PATH_CONFIDENCE_BAND, function (data) {
 $.get(PATH_ED_DETECT, function (data) {
   myChart2.setOption(
     (option2 = {
-      title: {
-        text: "ED DETECT",
-        subtext: "Anomaly detection",
-        left: "center",
-      },
+      
       dataZoom: [
         {
           id: "dataZoomX",
@@ -146,6 +142,7 @@ $.get(PATH_ED_DETECT, function (data) {
           filterMode: "empty",
         },
       ],
+      legend: {},
       xAxis: {
         type: "category",
         data: data.map(function (item) {
@@ -166,7 +163,7 @@ $.get(PATH_ED_DETECT, function (data) {
       series: [
         // Schlauch
         {
-          name: "yhat_lower",
+          name: "yhat_schlauch",
           type: "line",
           data: data.map(function (item) {
             return item.yhat_lower;
@@ -179,7 +176,7 @@ $.get(PATH_ED_DETECT, function (data) {
           stack: "yhat-band",
         },
         {
-          name: "yhat_upper",
+          name: "yhat_schlauch",
           type: "line",
           data: data.map(function (item) {
             // Schlauchbreite!
@@ -199,7 +196,7 @@ $.get(PATH_ED_DETECT, function (data) {
 
         // Obere Punkte
         {
-          name: "upper_scatter",
+          name: "much_upper_scatter",
           type: "effectScatter",
           data: data.map(function (item) {
             if (item.orig_value - item.yhat_upper > 1500) {
