@@ -1,11 +1,14 @@
 var PATH_CONFIDENCE_BAND = "./confidence-band.json";
 var PATH_ED_DETECT = "./edDetect.json";
+var PATH_ED_DETECT_ADVANCED = "./eddetect_output_advanced.json";
 
 var chartDom1 = document.getElementById("main1");
 var chartDom2 = document.getElementById("main2");
+var chartDom3 = document.getElementById("main3");
 
 var myChart1 = echarts.init(chartDom1);
 var myChart2 = echarts.init(chartDom2);
+var myChart3 = echarts.init(chartDom3);
 
 var option1;
 
@@ -161,7 +164,10 @@ $.get(PATH_ED_DETECT, function (data) {
         },
         boundaryGap: false,
       },
-      yAxis: {},
+      yAxis: [{
+        type: "value",
+        scale: true
+      }],
 
       series: [
         // Schlauch
@@ -293,4 +299,231 @@ $.get(PATH_ED_DETECT, function (data) {
   );
 });
 
-option2 && myChart2.setOption(option2);
+var minDate = null;
+var maxDate = null;
+var TimeLine = [];
+var getDaysArray = function(start, end) {
+  for(var arr=[],dt=new Date(start); dt<=new Date(end); dt.setDate(dt.getDate()+1)){
+      arr.push(new Date(dt));
+  }
+  return arr;
+};
+$.get(PATH_ED_DETECT_ADVANCED, function (data) {
+  data.map(function (item){
+    var date = new Date(item.ds.substring(3,5) +"."+item.ds.substring(0,2)+"."+item.ds.substring(6))
+    if (date <= minDate || minDate === null){
+      minDate = date;
+    }
+    if (date >= maxDate || maxDate === null){
+      maxDate = date;
+    }
+  });
+  TimeLine = getDaysArray(minDate,maxDate);
+  myChart3.setOption(
+    (option3 = {
+      
+      dataZoom: [
+        {
+          id: "dataZoomX",
+          type: "slider",
+          xAxisIndex: [0],
+          filterMode: "filter",
+        },
+      ],
+      title: {
+        text: "Confidence Band",
+        subtext: "Example in MetricsGraphics.js",
+        left: "center",
+      },
+      legend: {
+        right: 'auto',
+        left: 895,
+        bottom: 'center'
+      },
+      xAxis: {
+        type: "category",
+        data: TimeLine,
+        axisLabel: {
+          formatter: function (value) {
+            var date = new Date(value);
+            return [date.getDate(), date.getMonth() + 1, date.getFullYear()].join(".");
+          },
+        },
+        boundaryGap: false,
+      },
+      yAxis: [{
+        type: "value",
+        scale: true
+      }],
+
+      series: [
+        // Aachen Schlauch
+        {
+          name: "Aachen Schlauch",
+          type: "line",
+          data: data.map(function (item) {
+            if(item.city === 'Aachen')
+            return item.yhat_lower_pres;
+          }),
+          lineStyle: {
+            opacity: 0,
+          },
+          symbol: "none",
+          stackStrategy: "all",
+          stack: "Aachen Schlauch",
+        },
+        {
+          name: "Aachen Schlauch",
+          type: "line",
+          data: data.map(function (item) {
+            // Schlauchbreite!
+            if(item.city === 'Aachen')
+
+            return item.yhat_upper_pres - item.yhat_lower_pres;
+          }),
+          lineStyle: {
+            opacity: 0,
+          },
+
+          areaStyle: {
+            color: "rgba(99, 0, 0, 0.83)"
+          },
+          stack: "Aachen Schlauch",
+          stackStrategy: "all",
+          symbol: "none",
+        },
+
+
+        // Berlin Schlauch
+        {
+          name: "Berlin Schlauch",
+          type: "line",
+          data: data.map(function (item) {
+            if(item.city === 'Berlin')
+            return item.yhat_lower_pres;
+          }),
+          lineStyle: {
+            opacity: 0,
+          },
+          symbol: "none",
+          stackStrategy: "all",
+          stack: "Berlin Schlauch",
+        },
+        {
+          name: "Berlin Schlauch",
+          type: "line",
+          data: data.map(function (item) {
+            // Schlauchbreite!
+            if(item.city === 'Berlin')
+
+            return item.yhat_upper_pres - item.yhat_lower_pres;
+          }),
+          lineStyle: {
+            opacity: 0,
+          },
+
+          areaStyle: {
+            color: "rgba(0, 99, 0, 0.83)",
+          },
+          stack: "Berlin Schlauch",
+          stackStrategy: "all",
+          symbol: "none",
+        },
+/*
+        // Obere Punkte
+        {
+          name: "> 1500",
+          type: "effectScatter",
+          data: data.map(function (item) {
+            if (item.pres - item.yhat_upper_pres > 1500) {
+              return item.pres;
+            }
+          }),
+          symbolSize: 5,
+          itemStyle: {
+            color: "red",
+          },
+          symbol: "circle",
+        },
+        {
+          name: "1500 - 0",
+          type: "effectScatter",
+          data: data.map(function (item) {
+            if (
+              item.pres - item.yhat_upper_pres > 0 &&
+              item.pres - item.yhat_upper_pres < 1500
+            ) {
+              return item.pres;
+            }
+          }),
+          symbolSize: 4,
+          itemStyle: {
+            color: "orange",
+          },
+        },
+        // Untere Punkte
+        {
+          name: "0 - 1000",
+          type: "scatter",
+          data: data.map(function (item) {
+            if (
+              ((item.yhat_lower_pres - item.pres) > 0) &&
+              ((item.yhat_lower_pres - item.pres) < 1000)
+              ) {
+                return item.pres;
+              }
+            }),
+            symbolSize: 3,
+            itemStyle: {
+              color: "blue",
+            },
+          },
+          {
+            name: "< 1000",
+            type: "scatter",
+            data: data.map(function (item) {
+              if (item.yhat_lower_pres - item.pres > 1000) {
+                return item.pres;
+              }
+            }),
+            symbolSize: 5,
+            itemStyle: {
+              color: "purple",
+            },
+            symbol: "circle",
+          },
+          
+        // Mittlere Punkte
+        {
+          name: "mid",
+          type: "scatter",
+          data: data.map(function (item) {
+            if ((item.yhat_lower_pres < item.pres) && (item.pres < item.yhat_upper_pres)) {
+              return item.pres;
+            }
+          }),
+          symbolSize: 2,
+          itemStyle: {
+            color: "black",
+          },
+          symbol: "circle",
+        },
+
+        // Mittelwert
+        {
+          name: "yhat",
+          type: "line",
+          data: data.map(function (item) {
+            return item.yhat;
+          }),
+          itemStyle: {
+            color: "black",
+          },
+          showSymbol: false,
+        },
+        */
+      ],
+    })
+  );
+});
+
