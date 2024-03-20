@@ -12,6 +12,7 @@ var myChart3 = echarts.init(chartDom3);
 
 var option1;
 
+// Main1
 $.get(PATH_CONFIDENCE_BAND, function (data) {
   myChart1.hideLoading();
   var base = -data.reduce(function (min, val) {
@@ -20,9 +21,9 @@ $.get(PATH_CONFIDENCE_BAND, function (data) {
   myChart1.setOption(
     (option = {
       title: {
-        text: "Confidence Band",
-        subtext: "Example in MetricsGraphics.js",
+        text: "Main1",
         left: "center",
+        top: 20,
       },
       tooltip: {
         trigger: "axis",
@@ -127,10 +128,10 @@ $.get(PATH_CONFIDENCE_BAND, function (data) {
   );
 });
 
+// Main2
 $.get(PATH_ED_DETECT, function (data) {
   myChart2.setOption(
     (option2 = {
-      
       dataZoom: [
         {
           id: "dataZoomX",
@@ -140,14 +141,14 @@ $.get(PATH_ED_DETECT, function (data) {
         },
       ],
       title: {
-        text: "Confidence Band",
-        subtext: "Example in MetricsGraphics.js",
+        text: "Main2",
         left: "center",
+        top: 20,
       },
       legend: {
-        right: 'auto',
+        right: "auto",
         left: 895,
-        bottom: 'center'
+        bottom: "center",
       },
       xAxis: {
         type: "category",
@@ -164,10 +165,12 @@ $.get(PATH_ED_DETECT, function (data) {
         },
         boundaryGap: false,
       },
-      yAxis: [{
-        type: "value",
-        scale: true
-      }],
+      yAxis: [
+        {
+          type: "value",
+          scale: true,
+        },
+      ],
 
       series: [
         // Schlauch
@@ -240,38 +243,41 @@ $.get(PATH_ED_DETECT, function (data) {
           type: "scatter",
           data: data.map(function (item) {
             if (
-              ((item.yhat_lower - item.orig_value) > 0) &&
-              ((item.yhat_lower - item.orig_value) < 1000)
-              ) {
-                return item.orig_value;
-              }
-            }),
-            symbolSize: 3,
-            itemStyle: {
-              color: "blue",
-            },
+              item.yhat_lower - item.orig_value > 0 &&
+              item.yhat_lower - item.orig_value < 1000
+            ) {
+              return item.orig_value;
+            }
+          }),
+          symbolSize: 3,
+          itemStyle: {
+            color: "blue",
           },
-          {
-            name: "< 1000",
-            type: "scatter",
-            data: data.map(function (item) {
-              if (item.yhat_lower - item.orig_value > 1000) {
-                return item.orig_value;
-              }
-            }),
-            symbolSize: 5,
-            itemStyle: {
-              color: "purple",
-            },
-            symbol: "circle",
+        },
+        {
+          name: "< 1000",
+          type: "scatter",
+          data: data.map(function (item) {
+            if (item.yhat_lower - item.orig_value > 1000) {
+              return item.orig_value;
+            }
+          }),
+          symbolSize: 5,
+          itemStyle: {
+            color: "purple",
           },
-          
+          symbol: "circle",
+        },
+
         // Mittlere Punkte
         {
           name: "mid",
           type: "scatter",
           data: data.map(function (item) {
-            if ((item.yhat_lower < item.orig_value) && (item.orig_value < item.yhat_upper)) {
+            if (
+              item.yhat_lower < item.orig_value &&
+              item.orig_value < item.yhat_upper
+            ) {
               return item.orig_value;
             }
           }),
@@ -299,29 +305,40 @@ $.get(PATH_ED_DETECT, function (data) {
   );
 });
 
+// Main3
 var minDate = null;
 var maxDate = null;
 var TimeLine = [];
-var getDaysArray = function(start, end) {
-  for(var arr=[],dt=new Date(start); dt<=new Date(end); dt.setDate(dt.getDate()+1)){
-      arr.push(new Date(dt));
+var getDaysArray = function (start, end) {
+  for (
+    var arr = [], dt = new Date(start);
+    dt <= new Date(end);
+    dt.setDate(dt.getDate() + 1)
+  ) {
+    arr.push(new Date(dt));
   }
   return arr;
 };
+
 $.get(PATH_ED_DETECT_ADVANCED, function (data) {
-  data.map(function (item){
-    var date = new Date(item.ds.substring(3,5) +"."+item.ds.substring(0,2)+"."+item.ds.substring(6))
-    if (date <= minDate || minDate === null){
+  data.map(function (item) {
+    var date = new Date(
+      item.ds.substring(3, 5) +
+        "." +
+        item.ds.substring(0, 2) +
+        "." +
+        item.ds.substring(6)
+    );
+    if (date <= minDate || minDate === null) {
       minDate = date;
     }
-    if (date >= maxDate || maxDate === null){
+    if (date >= maxDate || maxDate === null) {
       maxDate = date;
     }
   });
-  TimeLine = getDaysArray(minDate,maxDate);
+  TimeLine = getDaysArray(minDate, maxDate);
   myChart3.setOption(
     (option3 = {
-      
       dataZoom: [
         {
           id: "dataZoomX",
@@ -331,30 +348,41 @@ $.get(PATH_ED_DETECT_ADVANCED, function (data) {
         },
       ],
       title: {
-        text: "Confidence Band",
-        subtext: "Example in MetricsGraphics.js",
+        text: "Main3",
         left: "center",
+        top: 20,
       },
       legend: {
-        right: 'auto',
+        right: "auto",
         left: 895,
-        bottom: 'center'
+        bottom: "center",
       },
       xAxis: {
         type: "category",
+        data: data.map(function (item) {
+          return item.ds;
+        }),
+        /*
         data: TimeLine,
         axisLabel: {
           formatter: function (value) {
             var date = new Date(value);
-            return [date.getDate(), date.getMonth() + 1, date.getFullYear()].join(".");
+            return [
+              date.getDate(),
+              date.getMonth() + 1,
+              date.getFullYear(),
+            ].join(".");
           },
         },
         boundaryGap: false,
+        */
       },
-      yAxis: [{
-        type: "value",
-        scale: true
-      }],
+      yAxis: [
+        {
+          type: "value",
+          scale: true,
+        },
+      ],
 
       series: [
         // Aachen Schlauch
@@ -362,8 +390,7 @@ $.get(PATH_ED_DETECT_ADVANCED, function (data) {
           name: "Aachen Schlauch",
           type: "line",
           data: data.map(function (item) {
-            if(item.city === 'Aachen')
-            return item.yhat_lower_pres;
+            if (item.city === "Aachen") return item.yhat_lower_pres;
           }),
           lineStyle: {
             opacity: 0,
@@ -377,30 +404,27 @@ $.get(PATH_ED_DETECT_ADVANCED, function (data) {
           type: "line",
           data: data.map(function (item) {
             // Schlauchbreite!
-            if(item.city === 'Aachen')
-
-            return item.yhat_upper_pres - item.yhat_lower_pres;
+            if (item.city === "Aachen")
+              return item.yhat_upper_pres - item.yhat_lower_pres;
           }),
           lineStyle: {
             opacity: 0,
           },
 
           areaStyle: {
-            color: "rgba(99, 0, 0, 0.83)"
+            color: "rgba(99, 0, 0, 0.83)",
           },
           stack: "Aachen Schlauch",
           stackStrategy: "all",
           symbol: "none",
         },
 
-
         // Berlin Schlauch
         {
           name: "Berlin Schlauch",
           type: "line",
           data: data.map(function (item) {
-            if(item.city === 'Berlin')
-            return item.yhat_lower_pres;
+            if (item.city === "Berlin") return item.yhat_lower_pres;
           }),
           lineStyle: {
             opacity: 0,
@@ -414,9 +438,8 @@ $.get(PATH_ED_DETECT_ADVANCED, function (data) {
           type: "line",
           data: data.map(function (item) {
             // Schlauchbreite!
-            if(item.city === 'Berlin')
-
-            return item.yhat_upper_pres - item.yhat_lower_pres;
+            if (item.city === "Berlin")
+              return item.yhat_upper_pres - item.yhat_lower_pres;
           }),
           lineStyle: {
             opacity: 0,
@@ -429,7 +452,6 @@ $.get(PATH_ED_DETECT_ADVANCED, function (data) {
           stackStrategy: "all",
           symbol: "none",
         },
-/*
         // Obere Punkte
         {
           name: "> 1500",
@@ -467,38 +489,41 @@ $.get(PATH_ED_DETECT_ADVANCED, function (data) {
           type: "scatter",
           data: data.map(function (item) {
             if (
-              ((item.yhat_lower_pres - item.pres) > 0) &&
-              ((item.yhat_lower_pres - item.pres) < 1000)
-              ) {
-                return item.pres;
-              }
-            }),
-            symbolSize: 3,
-            itemStyle: {
-              color: "blue",
-            },
+              item.yhat_lower_pres - item.pres > 0 &&
+              item.yhat_lower_pres - item.pres < 1000
+            ) {
+              return item.pres;
+            }
+          }),
+          symbolSize: 3,
+          itemStyle: {
+            color: "blue",
           },
-          {
-            name: "< 1000",
-            type: "scatter",
-            data: data.map(function (item) {
-              if (item.yhat_lower_pres - item.pres > 1000) {
-                return item.pres;
-              }
-            }),
-            symbolSize: 5,
-            itemStyle: {
-              color: "purple",
-            },
-            symbol: "circle",
+        },
+        {
+          name: "< 1000",
+          type: "scatter",
+          data: data.map(function (item) {
+            if (item.yhat_lower_pres - item.pres > 1000) {
+              return item.pres;
+            }
+          }),
+          symbolSize: 5,
+          itemStyle: {
+            color: "purple",
           },
-          
+          symbol: "circle",
+        },
+
         // Mittlere Punkte
         {
           name: "mid",
           type: "scatter",
           data: data.map(function (item) {
-            if ((item.yhat_lower_pres < item.pres) && (item.pres < item.yhat_upper_pres)) {
+            if (
+              item.yhat_lower_pres < item.pres &&
+              item.pres < item.yhat_upper_pres
+            ) {
               return item.pres;
             }
           }),
@@ -521,9 +546,53 @@ $.get(PATH_ED_DETECT_ADVANCED, function (data) {
           },
           showSymbol: false,
         },
-        */
       ],
     })
   );
 });
 
+
+
+
+
+
+
+// Main 4:
+var chartDom4 = document.getElementById("main4");
+var myChart = echarts.init(chartDom4);
+
+// SQL Abfragen
+var xData = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+var y1Data = [150, 230, 224, 218, 135, 147, 160];
+var y2Data = [100, 200, 204, 118, 125, 247, 100];
+
+var series = [];
+series.push();
+
+
+var option = {
+  title: {
+    text: "Main7",
+    left: "center",
+    top: 20,
+  },
+  xAxis: {
+    type: "category",
+    data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+  },
+  yAxis: {
+    type: "value",
+  },
+  series: [
+    {
+      data: y1Data,
+      type: "line",
+    },
+    {
+      data: y2Data,
+      type: "line",
+    },
+  ],
+};
+
+myChart.setOption(option);
